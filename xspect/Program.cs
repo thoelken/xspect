@@ -16,8 +16,11 @@ namespace xspect
             }
             System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo("en-us");
             string rawfile_name = "";
+            string peptides_filename = "";  // peptide list in TSV format for quantification
+            // set output to stdout by default (can be changed to FileStreamWriter with -o parameter)
             System.IO.StreamWriter output = new System.IO.StreamWriter(Console.OpenStandardOutput());
-            int q = 10;
+            int q = 10;     // pick 'q' peaks per 100Da
+            double min_intensity_cutoff = 0.0;  // peak picking threshold
             for(int i=0; i<args.Length; i++)
             {
                 output.WriteLine(args[i]);
@@ -35,6 +38,9 @@ namespace xspect
                     case "--format":
                         ++i;
                         break;
+                    case "-r":
+                    case "--ratios":
+                        peptides_filename = args[++i]; break;
                     default:
                         rawfile_name = args[i]; break;
                 }
@@ -125,6 +131,11 @@ namespace xspect
         private static void showUsage()
         {
             System.Console.Out.WriteLine("xspect [OPTIONS] <RAW FILE>");
+        }
+
+        private static double[,] pickPeaks(ref double[,] peaks, int q, double threshold)
+        {
+            return peaks;
         }
     }
 }
