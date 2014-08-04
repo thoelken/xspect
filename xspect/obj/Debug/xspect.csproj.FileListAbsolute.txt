@@ -1,0 +1,8 @@
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\bin\Debug\xspect.exe
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\bin\Debug\xspect.pdb
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\bin\Debug\Interop.MSFileReaderLib.dll
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\obj\Debug\xspect.csprojResolveAssemblyReference.cache
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\obj\Debug\Interop.MSFileReaderLib.dll
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\obj\Debug\xspect.csproj.ResolveComReference.cache
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\obj\Debug\xspect.exe
+c:\users\n3\documents\visual studio 2013\Projects\xspect\xspect\obj\Debug\xspect.pdb
