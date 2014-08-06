@@ -114,10 +114,11 @@ namespace xspect
                     {
                         continue;
                     }
-                    double[,] peaks = (double[,])data;
-                    for (int p = 0; p < num_peaks; p++ )
+                    //double[,] peaks = (double[,])data;
+                    SortedDictionary<double, double> peaks = pickPeaks((double[,])data, q, min_intensity_cutoff);
+                    foreach (KeyValuePair<double, double> p in peaks)
                     {
-                        output.WriteLine("{0} {1}", peaks[0,p].ToString(ci), peaks[1,p].ToString(ci));
+                        output.WriteLine("{0} {1}", p.Key.ToString(ci), p.Value.ToString(ci));
                     }
                     output.WriteLine("END IONS");
                     output.WriteLine("");
@@ -133,9 +134,42 @@ namespace xspect
             System.Console.Out.WriteLine("xspect [OPTIONS] <RAW FILE>");
         }
 
-        private static double[,] pickPeaks(ref double[,] peaks, int q, double threshold)
+        private static SortedDictionary<double, double> pickPeaks(double[,] peaks, int q, double threshold)
         {
-            return peaks;
+            SortedDictionary<double, double> intens_map = new SortedDictionary<double, double>();
+            SortedDictionary<double, double> peak_map = new SortedDictionary<double,double>();
+            double lowerbound = 0.0;
+            for (int i = 0; i < peaks.Length / 2; i++)
+            {
+                double mz = peaks[0, i];
+                double intens = peaks[1, i];
+                if (intens <= 0)
+                {
+                    continue;
+                }
+                if (mz - 100 > lowerbound)
+                {
+                    SortedDictionary<double, double>.Enumerator e = intens_map.GetEnumerator();
+                    int count = 0;
+                    while(e.MoveNext() && q>=count++) {
+                        peak_map.Add(e.Current.Value, e.Current.Key);
+                    }
+                    intens_map = new SortedDictionary<double, double>();
+                    lowerbound = mz;
+                }
+                while (intens_map.ContainsKey(intens))
+                {
+                    intens += 0.01;
+                }
+                intens_map.Add(intens, mz);
+            }
+            SortedDictionary<double, double>.Enumerator e2 = intens_map.GetEnumerator();
+            int count2 = 0;
+            while (e2.MoveNext() && q * peaks[0, peaks.Length/2 - 1] - lowerbound / 100 >= count2++)
+            {
+                peak_map.Add(e2.Current.Value, e2.Current.Key);
+            }
+            return peak_map;
         }
     }
 }
