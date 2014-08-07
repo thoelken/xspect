@@ -6,6 +6,9 @@ namespace xspect
 {
     class Program
     {
+    
+    	static constant string VERSION = "0.0.1";
+    	static constant double PROTON = 1.007276466;
         static void Main(string[] args)
         {
             if (args.Length < 1)
@@ -23,7 +26,6 @@ namespace xspect
             double min_intensity_cutoff = 0.0;  // peak picking threshold
             for(int i=0; i<args.Length; i++)
             {
-                output.WriteLine(args[i]);
                 switch (args[i])
                 {
                     case "-h":
@@ -100,11 +102,12 @@ namespace xspect
                             charge = Int16.Parse(value_strings[v]);
                         }
                     }
+                    //pre_mass = pre_mass * charge - (charge * PROTON)
                     output.WriteLine("BEGIN IONS");
                     output.WriteLine("TITLE={0} {1:D}", rawfile_name, i);
                     output.WriteLine("CHARGE={0:D}+", charge);
                     output.WriteLine("PEPMASS={0}", pre_mass.ToString(ci));
-                    output.WriteLine("ISO={0:D}", 0);
+                    //output.WriteLine("ISO={0:D}", 0);	// Isotopic precursor
                     object data = null;
                     object flags = null;
                     int num_peaks = new int();
@@ -118,7 +121,7 @@ namespace xspect
                     SortedDictionary<double, double> peaks = pickPeaks((double[,])data, q, min_intensity_cutoff);
                     foreach (KeyValuePair<double, double> p in peaks)
                     {
-                        output.WriteLine("{0} {1}", p.Key.ToString(ci), p.Value.ToString(ci));
+                        output.WriteLine("{0} {1}", p.Key.ToString(ci), p.Value.ToString("0.00",ci));
                     }
                     output.WriteLine("END IONS");
                     output.WriteLine("");
@@ -131,7 +134,7 @@ namespace xspect
 
         private static void showUsage()
         {
-            System.Console.Out.WriteLine("xspect [OPTIONS] <RAW FILE>");
+            System.Console.Error.Write(USAGE);
         }
 
         private static SortedDictionary<double, double> pickPeaks(double[,] peaks, int q, double threshold)
@@ -159,7 +162,7 @@ namespace xspect
                 }
                 while (intens_map.ContainsKey(intens))
                 {
-                    intens += 0.01;
+                    intens += 0.01;	// slightly favors later peaks in the spectrum
                 }
                 intens_map.Add(intens, mz);
             }
@@ -171,5 +174,17 @@ namespace xspect
             }
             return peak_map;
         }
+        
+    private const string USAGE = "Xspect - version "+VERSION"\n"+
+    		"Extracts MS2 spectra from binary raw files of Thermo Scientific"+ 	
+    		"instruments and converts them into the MGF format.\n\n"+
+    	    "USAGE:\n"+
+			"\txspect.exe [OPTIONS] <RAWFILE>\n"+
+            "OPTIONS:\n"+
+            "\t-h --help\t\tshow help\n"+
+            "\t-q <NUMBER>\t\tpick 'q' most intens peaks per 100Da (DEFAULT=10)\n"+
+            "\t-o --output <FILE>\tdirect output to file\n"+
+			"EXAMPLE:\n"+
+			"\txspect.exe -q 6 -o output.mgf rawfile.raw\n";
     }
 }
